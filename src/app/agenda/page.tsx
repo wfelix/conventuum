@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from '@/context/auth';
 import axios from 'axios';
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 
 export default function Agenda() {
@@ -12,7 +12,29 @@ export default function Agenda() {
         date: '',
         time: '',
         description: '',
+        id: '',
+        phone: '',
     });
+
+
+    useEffect(() => {
+        const userData = localStorage.getItem('@user');
+        if (userData) {
+            const parsedData = JSON.parse(userData);
+
+
+            setFormData({
+                nome: parsedData.data.customer.name,
+                date: '',
+                time: '',
+                description: '',
+                id: parsedData.data.customer.id,
+                phone: parsedData.data.customer.phone,
+
+            });
+        }
+    }, []);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({
@@ -35,8 +57,8 @@ export default function Agenda() {
     return (
         <main className="max-w-2xl mx-auto p-6 text-black">
             <h1 className="text-gray-400 text-center m-10 text-xl text-bold ">Agendar consulta</h1>
-            <h2 className="text-gray-400 text-center m-10 text-xl text-bold ">Nome:</h2>
-            <h3 className="text-gray-400 text-center m-10 text-xl text-bold ">ID:</h3>
+            <h2 className="text-gray-400 text-center m-10 text-xl text-bold ">{`Nome: ${formData.nome}`}</h2>
+            <h3 className="text-gray-400 text-center m-10 text-xl text-bold ">{`ID: ${formData.id}`}</h3>
 
             <form className="w-full max-w-lg" onSubmit={handleSubmit}>
                 <div className="flex flex-wrap -mx-3 mb-6">
