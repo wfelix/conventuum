@@ -5,15 +5,16 @@ import { use, useEffect, useState } from 'react';
 
 
 export default function Agenda() {
-    const { user } = useAuth();
+    const { appointments } = useAuth();
 
     const [formData, setFormData] = useState({
         nome: '',
         date: '',
         time: '',
-        description: '',
-        id: '',
+        notes: '',
+        customer_id: '',
         phone: '',
+
     });
 
 
@@ -27,38 +28,53 @@ export default function Agenda() {
                 nome: parsedData.data.customer.name,
                 date: '',
                 time: '',
-                description: '',
-                id: parsedData.data.customer.id,
+                notes: '',
+                customer_id: parsedData.data.customer.id,
                 phone: parsedData.data.customer.phone,
+
 
             });
         }
     }, []);
-
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
+
     };
+
+    function formatarHora(time: string) {
+
+        const [hora, minuto] = time.split(':');
+
+        const segundos = "37";
+        const milissegundos = "958";
+
+        const horaUtc = parseInt(hora) + 1;
+
+
+        const horaFormatada = `T${horaUtc}:${minuto}:${segundos}.${milissegundos}Z`;
+
+        return horaFormatada;
+    }
+
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        try {
-            const response = await axios.post('/api/customers', formData);
-            console.log(response.data);
-        } catch (error) {
-            console.error(error);
-        }
+        const formattedTime = formatarHora(formData.time);
+
+        appointments(formData.customer_id, `${formData.date}${formattedTime}`, formData.notes);
+
     };
+
 
     return (
         <main className="max-w-2xl mx-auto p-6 text-black">
             <h1 className="text-gray-400 text-center m-10 text-xl text-bold ">Agendar consulta</h1>
-            <h2 className="text-gray-400 text-center m-10 text-xl text-bold ">{`Nome: ${formData.nome}`}</h2>
-            <h3 className="text-gray-400 text-center m-10 text-xl text-bold ">{`ID: ${formData.id}`}</h3>
 
             <form className="w-full max-w-lg" onSubmit={handleSubmit}>
                 <div className="flex flex-wrap -mx-3 mb-6">
@@ -73,6 +89,20 @@ export default function Agenda() {
                             name="nome"
                             placeholder="Nome"
                             value={formData.nome}
+                            onChange={handleChange}
+                        />
+                    </div>
+                </div>
+                <label>Telefone</label>
+                <div className="flex flex-wrap -mx-3 mb-6">
+                    <div className="w-full px-3">
+                        <input
+                            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            id="telefone"
+                            type="text"
+                            name="telefone"
+                            placeholder="Telefone"
+                            value={formData.phone}
                             onChange={handleChange}
                         />
                     </div>
@@ -107,11 +137,11 @@ export default function Agenda() {
                 </div>
                 <label>Observação</label>
                 <textarea
-                    name="description"
+                    name="notes"
                     id=""
                     className="bg-gray-200 px-16 text-gray-500 border border-gray-200 w-full"
                     placeholder="Observação"
-                    value={formData.description}
+                    value={formData.notes}
                     onChange={handleChange}
                 ></textarea>
                 <div className="md:flex md:items-center">
