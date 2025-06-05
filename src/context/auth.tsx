@@ -23,11 +23,19 @@ type User = {
 	token: string;
 }
 
+
+type appointments = {
+	customer_id: string;
+	scheduled_at: string;
+	notes: string;
+}
+
 type AuthContextData = {
 	loading: boolean;
 	user: User;
 	signIn: (phone: string, password: string) => Promise<void>;
 	signOut: () => Promise<void>;
+	appointments: (customer_id: string, scheduled_at: string, notes: string) => Promise<void>;
 }
 
 type AuthProviderProps = {
@@ -65,7 +73,6 @@ function AuthProvider({ children }: AuthProviderProps) {
 			if (data && data.data.token) {
 				setUser(data);
 
-				console.log('teste1', data)
 
 				api.defaults.headers;
 
@@ -78,6 +85,50 @@ function AuthProvider({ children }: AuthProviderProps) {
 
 			} else {
 				localStorage.removeItem('@user');
+			}
+
+
+		} catch {
+			alert('Usuário não encontrado ou senha incorreta');
+			throw new Error('Não foi possivel autenticar');
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	async function appointments(customer_id: string, scheduled_at: string, notes: string) {
+		try {
+			setLoading(true);
+
+			// const authUrl = `${api.defaults.baseURL}/customers/login}`;
+
+			const response = await api.post('/appointments', {
+				customer_id,
+				scheduled_at,
+				notes
+			},
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
+				}
+			)
+
+			const { data } = response;
+
+
+			if (data) {
+
+				localStorage.setItem('@appointments', JSON.stringify(data));
+
+				setLoading(false);
+
+				// window.location.href = '/agenda';
+
+
+			} else {
+				localStorage.removeItem('@appointments');
 			}
 
 
@@ -114,7 +165,8 @@ function AuthProvider({ children }: AuthProviderProps) {
 			user,
 			signIn,
 			loading,
-			signOut
+			signOut,
+			appointments
 		}}>
 			{children}
 		</AuthContext.Provider>
