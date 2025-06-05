@@ -13,13 +13,13 @@ export default function LoginPage() {
 
     const handleLogin = (event: React.FormEvent) => {
 
-        // event.preventDefault();
+        event.preventDefault();
         signIn(phone, password);
 
     };
 
     useEffect(() => {
-        // Check if user is already logged in
+
         const user = localStorage.getItem('@user');
         if (user) {
 

@@ -61,17 +61,21 @@ function AuthProvider({ children }: AuthProviderProps) {
 
 			const { data } = response;
 
-			console.log('retorno', data);
 
-
-			if (data && data.token) {
+			if (data && data.data.token) {
 				setUser(data);
+
+				console.log('teste1', data)
 
 				api.defaults.headers;
 
 				localStorage.setItem('@user', JSON.stringify(data));
 
 				setLoading(false);
+
+				window.location.href = '/agenda';
+
+
 			} else {
 				localStorage.removeItem('@user');
 			}
@@ -127,3 +131,6 @@ export {
 	AuthProvider,
 	useAuth
 }
+
+//11958821329
+//123456789
