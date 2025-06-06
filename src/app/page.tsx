@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -18,7 +19,16 @@ export default function Home() {
       <h2 className="text-center text-gray-500 mb-8">Coordenador: Wilson Felix</h2>
 
       <h1 className="text-2xl font-bold text-center">Primeiro Aperfeiçoamento Prático</h1>
-      <h3 className="text-3xl font-bold text-center">05/06/2025</h3>
+      <h3 className="text-3xl font-bold text-center mb-8">05/06/2025</h3>
+
+      <div className="flex justify-center">
+        <Link
+          href="/login"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+        >
+          Fazer login
+        </Link>
+      </div>
     </main>
   );
 }

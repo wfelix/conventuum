@@ -30,12 +30,14 @@ type appointments = {
 	notes: string;
 }
 
-type AuthContextData = {
+type AppContextData = {
 	loading: boolean;
 	user: User;
 	signIn: (phone: string, password: string) => Promise<void>;
 	signOut: () => Promise<void>;
 	appointments: (customer_id: string, scheduled_at: string, notes: string) => Promise<void>;
+	listAppointments: () => Promise<void>;
+	list: any;
 }
 
 type AuthProviderProps = {
@@ -43,11 +45,12 @@ type AuthProviderProps = {
 }
 
 
-export const AuthContext = createContext({} as AuthContextData);
+export const AppContext = createContext({} as AppContextData);
 
-function AuthProvider({ children }: AuthProviderProps) {
+function AppProvider({ children }: AuthProviderProps) {
 	const [user, setUser] = useState<User>({} as User);
 	const [loading, setLoading] = useState(false);
+	const [list, setList] = useState([]);
 
 	async function signIn(phone: string, password: string) {
 		try {
@@ -124,8 +127,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
 				setLoading(false);
 
-				// window.location.href = '/agenda';
-
+				listAppointments();
 
 			} else {
 				localStorage.removeItem('@appointments');
@@ -133,8 +135,53 @@ function AuthProvider({ children }: AuthProviderProps) {
 
 
 		} catch {
-			alert('Usuário não encontrado ou senha incorreta');
-			throw new Error('Não foi possivel autenticar');
+			alert('');
+			throw new Error('');
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	async function listAppointments() {
+		try {
+			setLoading(true);
+
+			// const authUrl = `${api.defaults.baseURL}/customers/login}`;
+
+			const response = await api.get('/appointments',
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
+				}
+			)
+
+			const { data } = response;
+
+
+			if (data) {
+
+				localStorage.setItem('@listAppointments', JSON.stringify(data));
+
+
+				setList(data);
+
+				setLoading(false);
+
+				console.log('List of appointments:', data);
+
+				// window.location.href = '/agenda';
+
+
+			} else {
+				localStorage.removeItem('@listAppointments');
+			}
+
+
+		} catch {
+			alert('');
+			throw new Error('');
 		} finally {
 			setLoading(false);
 		}
@@ -160,28 +207,32 @@ function AuthProvider({ children }: AuthProviderProps) {
 	// 	loadUserStorageData();
 	// }, []);
 
+
+
 	return (
-		<AuthContext.Provider value={{
+		<AppContext.Provider value={{
 			user,
 			signIn,
 			loading,
 			signOut,
-			appointments
+			appointments,
+			listAppointments,
+			list
 		}}>
 			{children}
-		</AuthContext.Provider>
+		</AppContext.Provider>
 	)
 }
 
-function useAuth() {
-	const context = useContext(AuthContext);
+function useApp() {
+	const context = useContext(AppContext);
 
 	return context;
 }
 
 export {
-	AuthProvider,
-	useAuth
+	AppProvider,
+	useApp
 }
 
 //11958821329

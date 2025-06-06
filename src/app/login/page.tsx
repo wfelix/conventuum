@@ -1,13 +1,14 @@
 'use client';
 
-import { useAuth } from '@/context/auth';
+import { useApp } from '@/context/appContext';
 import Link from 'next/link';
+import router from 'next/router';
 import { useEffect, useState } from 'react';
 
 
 export default function LoginPage() {
 
-    const { signIn, loading } = useAuth();
+    const { signIn, loading } = useApp();
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
 
@@ -21,9 +22,7 @@ export default function LoginPage() {
     useEffect(() => {
 
         const user = localStorage.getItem('@user');
-        if (user) {
 
-        }
     }, []);
 
     return (
