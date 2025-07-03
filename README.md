@@ -23,3 +23,10 @@ cd conventuum
 yarn install
 
 yarn dev
+```
+
+2. **Criar o arquivo .env**
+
+Variavel: 
+    
+    NEXT_PUBLIC_URL_API=https://studium.wilsonfelix.com.br/api
