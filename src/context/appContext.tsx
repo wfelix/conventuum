@@ -38,6 +38,10 @@ type AppContextData = {
 	appointments: (customer_id: string, scheduled_at: string, notes: string) => Promise<void>;
 	listAppointments: () => Promise<void>;
 	list: any;
+	listDataDoctors: any;
+	customerList: any;
+	listDoctors: () => Promise<void>;
+	listCustomer: () => Promise<void>;
 }
 
 type AuthProviderProps = {
@@ -51,6 +55,8 @@ function AppProvider({ children }: AuthProviderProps) {
 	const [user, setUser] = useState<User>({} as User);
 	const [loading, setLoading] = useState(false);
 	const [list, setList] = useState([]);
+	const [listDataDoctors, setListDataDoctors] = useState([]);
+	const [customerList, setCustomerList] = useState([]);
 
 	async function signIn(phone: string, password: string) {
 		try {
@@ -83,7 +89,7 @@ function AppProvider({ children }: AuthProviderProps) {
 
 				setLoading(false);
 
-				window.location.href = '/agenda';
+				window.location.href = '/list-agenda';
 
 
 			} else {
@@ -142,6 +148,19 @@ function AppProvider({ children }: AuthProviderProps) {
 		}
 	}
 
+	async function listCustomer() {
+		const { data: responseCustomer } = await api.get('/customers',
+			{
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				}
+			}
+		)
+
+		setCustomerList(responseCustomer.data);
+	}
+
 	async function listAppointments() {
 		try {
 			setLoading(true);
@@ -164,7 +183,6 @@ function AppProvider({ children }: AuthProviderProps) {
 
 				localStorage.setItem('@listAppointments', JSON.stringify(data));
 
-
 				setList(data);
 
 				setLoading(false);
@@ -179,17 +197,69 @@ function AppProvider({ children }: AuthProviderProps) {
 			}
 
 
-		} catch {
-			alert('');
+		} catch (error: any) {
+			alert(error.message);
 			throw new Error('');
 		} finally {
 			setLoading(false);
 		}
 	}
 
+	async function listDoctors() {
+		try {
+			setLoading(true);
+
+			// const authUrl = `${api.defaults.baseURL}/customers/login}`;
+
+			const response = await api.get('/doctors',
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
+				}
+			)
+
+			const { data } = response;
+
+
+			if (data) {
+
+				localStorage.setItem('@listDoctors', JSON.stringify(data));
+
+
+				setListDataDoctors(data);
+
+				console.log('List of doctors:', data);
+
+				setLoading(false);
+
+				console.log('List of doctors:', data);
+
+				data.map((items: any) => {
+					console.log('doctors', items.name)
+				})
+
+				// window.location.href = '/agenda';
+
+
+			} else {
+				localStorage.removeItem('@listADoctors');
+			}
+
+
+		} catch (error: any) {
+			alert();
+			throw new Error('');
+		} finally {
+			setLoading(false);
+		}
+	}
+
+
 	async function signOut() {
-		// setUser({} as User);
-		// await AsyncStorage.removeItem(COLLECTION_USERS);
+		localStorage.removeItem('@user');
+		window.location.href = '/login';
 	}
 
 	// async function loadUserStorageData() {
@@ -217,7 +287,12 @@ function AppProvider({ children }: AuthProviderProps) {
 			signOut,
 			appointments,
 			listAppointments,
-			list
+			list,
+			listDataDoctors,
+			listDoctors,
+			customerList,
+			listCustomer,
+
 		}}>
 			{children}
 		</AppContext.Provider>

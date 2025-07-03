@@ -20,21 +20,23 @@ export default function LoginPage() {
     };
 
     useEffect(() => {
-
         const user = localStorage.getItem('@user');
-
+        if (user) {
+            window.location.href = '/lista-agenda';
+        }
     }, []);
 
     return (
         <main className="max-w-2xl mx-auto p-6 text-black">
             <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
-            <form className="flex flex-col items-center">
+            <form className="flex flex-col items-center" onSubmit={handleLogin}>
                 <input
                     type="text"
                     placeholder="Telefone/Celular"
                     className="mb-4 p-2 border border-gray-300 rounded w-full max-w-xs"
                     onChange={(e: any) => setPhone(e.target.value)}
                     value={phone}
+                    required
                 />
 
                 <input
@@ -43,21 +45,16 @@ export default function LoginPage() {
                     onChange={(e: any) => setPassword(e.target.value)}
                     value={password}
                     className="mb-4 p-2 border border-gray-300 rounded w-full max-w-xs"
+                    required
                 />
 
-                <Link
-                    href='/agenda'
-
+                <button
+                    type="submit"
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                    disabled={loading}
                 >
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-                        onClick={handleLogin}
-                    >
-                        Entrar
-                    </button>
-
-                </Link>
+                    {loading ? 'Entrando...' : 'Entrar'}
+                </button>
             </form>
         </main>
     );
